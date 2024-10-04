@@ -1,0 +1,30 @@
+# Unity specific
+# This ignores all .meta files under the Assets directory
+[Aa]ssets/**/*.meta
+
+# The following directories should be ignored
+Library/
+Temp/
+Obj/
+Build/
+BuildData/
+Logs/
+UserSettings/
+.vs/
+
+# OS generated files
+.DS_Store         # macOS
+Thumbs.db         # Windows
+
+# Visual Studio files
+*.sln
+*.csproj
+*.userprefs
+*.pidb.meta
+*.suo
+*.user
+*.unityproj
+*.booproj
+
+# Rider files
+.idea/

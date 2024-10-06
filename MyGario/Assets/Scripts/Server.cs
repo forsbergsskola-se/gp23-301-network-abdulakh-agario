@@ -1,57 +1,72 @@
 using System.Collections;
-using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using UnityEngine;
 
 public class Server : MonoBehaviour
 {
-    [SerializeField] private GameObject hostCanvas;
-    [SerializeField] private GameObject guestCanvas;
-    private bool _serverHasHost = false;
-    
-    
-    private void HandleUI()
+    [SerializeField] private GameObject playerPrefab;  // Player prefab to spawn
+    [SerializeField] private Transform[] spawnPoints;  // Random spawn points for players
+
+    private UdpClient udpServer;
+    private int serverPort = 9876; // Port for the server to listen on
+
+    void Start()
     {
-        
-        if (_serverHasHost)
+        // Initialize the UDP server and start listening for incoming connections
+        udpServer = new UdpClient(serverPort);
+        Debug.Log("Server started, listening on port: " + serverPort);
+
+        // Start listening for clients in a non-blocking way (coroutine)
+        StartCoroutine(ListenForClients());
+    }
+
+    // Coroutine to listen for clients and handle incoming data
+    private IEnumerator ListenForClients()
+    {
+        while (true)
         {
-            guestCanvas.SetActive(true);
-            hostCanvas.SetActive(false);
+            IPEndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+            // Wait until a message is received from a client
+            if (udpServer.Available > 0)
+            {
+                byte[] clientData = udpServer.Receive(ref clientEndPoint);
+                string message = Encoding.UTF8.GetString(clientData);
+
+                Debug.Log("Received message from client: " + message);
+                
+                // Spawn the player after receiving the message
+                SpawnPlayer(clientEndPoint.Address.ToString(), message);
+            }
+
+            yield return null; // Wait for the next frame to continue
         }
-        else
+    }
+
+    // Method to spawn a player in a random location
+    private void SpawnPlayer(string clientIpAddress, string userName)
+    {
+        // Get a random spawn point
+        Vector3 spawnPosition = spawnPoints[Random.Range(0, spawnPoints.Length)].position;
+
+        // Instantiate the player prefab at the spawn point
+        GameObject player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+
+        // Assign player data (username, IP) - assuming your PlayerController script has a method for this
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        playerController.SetPlayerInfo(userName, clientIpAddress);
+
+        Debug.Log($"Spawned player '{userName}' from IP {clientIpAddress} at {spawnPosition}");
+    }
+
+    private void OnApplicationQuit()
+    {
+        // Close the UDP server when the application quits
+        if (udpServer != null)
         {
-            hostCanvas.SetActive(true);
-            guestCanvas.SetActive(false);
+            udpServer.Close();
         }
-    }
-    
-    private void EstablishConnection()
-    {
-        //Get IP and username from clients through the host and guest Canvas textFields.
-        //Make first client a host. 
-        //Set _serverHasHost true after first client and until this connection is cancelled
-        
-    }
-    
-    
-    private void SpawnPlayerInRandonLocations()
-    {
-        //Make sure hostCanvas and guestCanvas are inactive for each player right before they spawn.
-        //After established connection, instantiate player prefab.
-    }
-
-    private void ReceiveData()
-    {
-        //Get speed and direction from each and every player every time
-        //the speed or direction changes.
-    }
-
-    private void BroadcastReceivedData()
-    {
-        //Update the positions of the players based on their speed and direction.
-    }
-
-    private void Disconnection()
-    {
-        //If host disconnects, disconnect all clients.
     }
 }

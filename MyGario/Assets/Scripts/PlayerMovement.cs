@@ -1,18 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Camera cam;
+    public float moveSpeed = 3f;
+    
+
     void Start()
     {
-        
+        cam = Camera.main;
     }
-
-    // Update is called once per frame
     void Update()
     {
-        
+        Vector2 input = Input.mousePosition;
+        Vector2 worldInput = cam.ScreenToWorldPoint(input);
+        transform.position = Vector3.MoveTowards(transform.position, worldInput, moveSpeed * Time.deltaTime);
     }
 }

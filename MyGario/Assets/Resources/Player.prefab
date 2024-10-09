@@ -104,7 +104,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
-  moveSpeed: 3
+  moveSpeed: 5
+  minX: -57
+  maxX: 96.5
+  minY: -74.5
+  maxY: 50
 --- !u!58 &1822413430328011123
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -180,6 +184,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scaleSpeed: 5
+  text: {fileID: 0}
 --- !u!114 &331545649340818072
 MonoBehaviour:
   m_ObjectHideFlags: 0

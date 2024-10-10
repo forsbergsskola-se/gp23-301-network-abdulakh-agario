@@ -11,7 +11,7 @@ public class CameraFollow : MonoBehaviour
 
     public Camera cam;
 
-    // Update is called once per frame
+    
     void Update()
     {
         Vector3 pos = Vector3.Lerp(transform.position, target.position, speed * Time.deltaTime);
